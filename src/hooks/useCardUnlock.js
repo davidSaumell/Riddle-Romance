@@ -1,33 +1,36 @@
 "use client"
+
 import { useState, useEffect } from "react"
+import { supabase } from "../lib/supabaseClient"
 
-const STORAGE_KEY = "unlockedCards"
-
-export default function useCardUnlock(initialCards = []) {
+export default function useCardUnlock(gameId, playerId) {
   const [unlockedCards, setUnlockedCards] = useState([])
 
-  // Cargar desde localStorage al inicio
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored) {
-      setUnlockedCards(JSON.parse(stored))
-    }
-  }, [])
+    if (!playerId) return
 
-  // Guardar en localStorage cada vez que cambie
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(unlockedCards))
-  }, [unlockedCards])
-
-  // Función para desbloquear una tarjeta
-  const unlockCard = (id) => {
-    if (!unlockedCards.includes(id)) {
-      setUnlockedCards([...unlockedCards, id])
+    const fetchUnlocked = async () => {
+      const { data, error } = await supabase
+        .from("unlocked_cards")
+        .select("card_id")
+        .eq("player_id", playerId)
+      if (!error) setUnlockedCards(data.map(c => c.card_id))
     }
+
+    fetchUnlocked()
+  }, [playerId])
+
+  const unlockCard = async (cardId) => {
+    if (unlockedCards.includes(cardId)) return
+
+    const { error } = await supabase
+      .from("unlocked_cards")
+      .insert([{ player_id: playerId, card_id: cardId }])
+
+    if (!error) setUnlockedCards(prev => [...prev, cardId])
   }
 
-  // Comprobar si una tarjeta está desbloqueada
-  const isUnlocked = (id) => unlockedCards.includes(id)
+  const isUnlocked = (cardId) => unlockedCards.includes(cardId)
 
-  return { unlockedCards, unlockCard, isUnlocked }
+  return { unlockCard, isUnlocked }
 }

@@ -1,18 +1,25 @@
-import Link from "next/link"
+"use client"
 
-export default function Home() {
+import { useRouter } from "next/navigation"
+
+export default function LandingPage() {
+  const router = useRouter()
+
+  const handleStart = () => {
+    router.push("/login")
+  }
+
   return (
     <section className="container">
-      <h1>Un juego para compartir momentos</h1>
-
+      <h1>Riddle Romance 💛</h1>
       <p>
-        Una colección de acertijos y minijuegos pensados para disfrutar en pareja.
-        Cada reto desbloquea pequeños regalos y experiencias juntos.
+        Bienvenido a tu web de acertijos y minijuegos para parejas.
+        Completa los retos y desbloquea tickets canjeables.
       </p>
 
-      <Link href="/games">
-        <button>Empezar</button>
-      </Link>
+      <button onClick={handleStart} className="start-button">
+        Empezar
+      </button>
     </section>
   )
 }

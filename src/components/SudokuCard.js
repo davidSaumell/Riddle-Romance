@@ -1,11 +1,30 @@
-'use client'
+"use client"
 
-export default function SudokuCard({ onSolved }) {
+import { useState } from "react"
+import GameCard from "./GameCard"
+
+export default function Sudoku({ card }) {
+  const [completed, setCompleted] = useState(false)
+
   return (
-    <>
-      <h3>Sudoku</h3>
-      <p>Resuelve el Sudoku para desbloquear el premio.</p>
-      <button onClick={onSolved}>Simular Sudoku completado</button>
-    </>
+    <GameCard flipped={completed} status={completed ? "completed" : "active"}>
+      <>
+        <div className="card-front">
+          <h3>🧩 Sudoku</h3>
+
+          <p>
+            Resuelve el sudoku para desbloquear la recompensa.
+          </p>
+
+          <button onClick={() => setCompleted(true)}>
+            Marcar como completado
+          </button>
+        </div>
+
+        <div className="card-back">
+          🎉 {card.reward}
+        </div>
+      </>
+    </GameCard>
   )
 }
