@@ -1,7 +1,30 @@
-body {
-  font-family: sans-serif;
+* {
+  box-sizing: border-box;
   margin: 0;
-  background: #fafafa;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #fffaf2;
+  color: #222;
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin: 32px 0 16px;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
 }
 
 .navbar {
@@ -16,112 +39,298 @@ body {
   text-decoration: none;
 }
 
-.container {
-  padding: 2rem;
+
+/* =========================
+   CONTENEDORES
+========================= */
+
+section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
 }
 
-/* ====== GRID ====== */
+/* =========================
+   GRID DE CARTAS (JUEGO)
+========================= */
+
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
-  margin-top: 32px;
 }
 
-/* ====== CARD BASE ====== */
-.card {
-  perspective: 1000px;
-}
+/* =========================
+   CARTAS DE JUEGO
+========================= */
 
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 220px;
-  transform-style: preserve-3d;
-  transition: transform 0.6s ease;
-}
-
-/* Flip */
-.card.flipped .card-inner {
-  transform: rotateY(180deg);
-}
-
-/* ====== FACES ====== */
-.card-front,
-.card-back {
-  position: absolute;
-  inset: 0;
+.game-card {
+  background: white;
   border-radius: 16px;
   padding: 20px;
-  backface-visibility: hidden;
+  border: 1px solid #eee;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 12px;
 }
 
-/* Front */
-.card-front {
-  background: #ffffff;
-  border: 2px solid #eee;
+.game-card input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
 }
 
-/* Back */
-.card-back {
-  background: linear-gradient(135deg, #ffb6c1, #ffdde1);
-  transform: rotateY(180deg);
-  text-align: center;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-/* ====== STATES ====== */
-.card.locked .card-front {
-  background: #f3f3f3;
-  color: #aaa;
-}
-
-.card.locked {
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-.card.completed .card-front {
-  border-color: #6fcf97;
-}
-
-.card.completed .card-back {
-  background: linear-gradient(135deg, #6fcf97, #b7f0c1);
-}
-
-/* ====== BUTTON ====== */
-.card button {
+.game-card button {
   margin-top: auto;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: 999px;
   border: none;
-  cursor: pointer;
-  background: #ff6f91;
+  background: #ff7ab6;
   color: white;
   font-weight: 600;
+  cursor: pointer;
 }
 
-.card button:hover {
-  background: #ff4f75;
+.game-card button:hover {
+  background: #ff5fa6;
 }
 
-/* ====== INPUT ====== */
-.card input {
-  padding: 8px;
-  margin-top: 12px;
+/* =========================
+   GRID DE TICKETS
+========================= */
+
+.tickets-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* =========================
+   TICKET
+========================= */
+
+.ticket {
+  display: flex;
+  background: #fff6e6;
+  border-radius: 16px;
+  min-width: 280px;
+  max-width: 340px;
+  overflow: hidden;
+  border: 1px dashed #f3c6a5;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.ticket-content p {
+  font-size: 0.9rem;
+  color: #444;
+}
+
+/* LADO IZQUIERDO (ICONO) */
+.ticket-side {
+  background: #ff5fa6;
+  color: white;
+  width: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+/* CONTENIDO */
+.ticket-content {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------------- */
+/* TO-DO: IMPLEMENTAR OTRA VEZ ESTE VISUAL EN EL TICKET */
+/* ---------------------------------------------------------------------------------------------------------------------------- */
+
+/* .ticket-content::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 12px;
+  bottom: 12px;
+  border-left: 2px dashed #ffd3e6;
+} */
+
+.ticket-content .status {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: #ff5fa6;
+}
+
+.ticket-content button {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #ff9fc7;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ticket-content button:hover {
+  background: #ff7ab6;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  width: 420px;
+  max-width: 95%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: pop 0.2s ease-out;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-header h2 {
+  font-size: 1.2rem;
+}
+
+.modal-header .close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* =========================
+   SUDOKU
+========================= */
+
+.sudoku-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 36px);
+  gap: 2px;
+  justify-content: center;
+  margin: 16px 0px 24px 0px;
+}
+
+.sudoku-cell {
+  width: 36px;
+  height: 36px;
+  text-align: center;
+  font-size: 16px;
   border-radius: 6px;
   border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.sudoku-cell.fixed {
+  background: #f0f0f0;
+  font-weight: bold;
+  cursor: default;
+}
+
+.sudoku-cell:not(.fixed):hover {
+  background: #fff0f7;
 }
 
 
-button {
-  margin-top: 1rem;
+.sudoku-cell.bottom-border {
+  border-bottom: 2px solid #444;
+}
+
+.sudoku-cell.right-border {
+  border-right: 2px solid #444;
 }
 
 .error {
-  color: red;
+  color: #c0392b;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.digits {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.digits button {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.digits button.selected {
+  background: #ff7ab6;
+  color: white;
+  border-color: #ff7ab6;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 600px) {
+  section {
+    padding: 20px 14px 48px;
+  }
+
+  .ticket {
+    width: 100%;
+  }
+  
+  .modal {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .sudoku-grid {
+    grid-template-columns: repeat(9, 32px);
+  }
+
+  .sudoku-cell {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
 }
