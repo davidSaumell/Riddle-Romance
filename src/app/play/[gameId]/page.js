@@ -3,19 +3,23 @@
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
-import GameCard from "@/components/GameCard"
-import RiddleCard from "@/components/RiddleCard"
-import MinesweeperCard from "@/components/MinesweeperCard"
-import SudokuCard from "@/components/SudokuCard"
-
+import GameCardRouter from "@/components/GameCardRouter"
+import TicketCard from "@/components/TicketCard"
+import useCardUnlock from "@/hooks/useCardUnlock"
 
 export default function PlayPage({ params }) {
   const { gameId } = params
 
-  const [loading, setLoading] = useState(true)
+  const [loadingGame, setLoadingGame] = useState(true)
   const [game, setGame] = useState(null)
   const [cards, setCards] = useState([])
+  const [playerId, setPlayerId] = useState(null)
 
+  // Hook que maneja cartas desbloqueadas en Supabase
+  const { unlockedCards, unlockCard, loading: loadingProgress } =
+    useCardUnlock(gameId, playerId)
+
+  // Inicialización: auth + juego + jugador
   useEffect(() => {
     const init = async () => {
       // Auth (anónimo si hace falta)
@@ -26,10 +30,41 @@ export default function PlayPage({ params }) {
       if (!user) {
         const { data, error } = await supabase.auth.signInAnonymously()
         if (error) {
-          console.error("Auth error:", error)
+          console.error("Auth error:", error.message)
           return
         }
         user = data.user
+      }
+
+      // Crear o recuperar jugador
+      let { data: existingPlayer, error: playerError } = await supabase
+        .from("players")
+        .select("*")
+        .eq("game_id", gameId)
+        .eq("id", user.id) // suponiendo player.id = auth.user.id
+        .single()
+
+      if (!existingPlayer) {
+        const { data: newPlayer, error: insertError } = await supabase
+          .from("players")
+          .insert([
+            {
+              id: user.id, // usamos id de Supabase auth
+              game_id: gameId,
+              name: "Jugador",
+            },
+          ])
+          .select()
+          .single()
+
+        if (insertError) {
+          console.error("Error creando jugador:", insertError.message)
+          return
+        }
+
+        setPlayerId(newPlayer.id)
+      } else {
+        setPlayerId(existingPlayer.id)
       }
 
       // Cargar game
@@ -51,7 +86,7 @@ export default function PlayPage({ params }) {
         .from("cards")
         .select("*")
         .eq("game_id", gameId)
-        .order("created_at")
+        .order("position", { ascending: true })
 
       if (cardsError) {
         console.error("Error cargando cards:", cardsError.message)
@@ -59,13 +94,13 @@ export default function PlayPage({ params }) {
       }
 
       setCards(cardsData)
-      setLoading(false)
+      setLoadingGame(false)
     }
 
     init()
   }, [gameId])
 
-  if (loading) return <p>Cargando juego...</p>
+  if (loadingGame || loadingProgress) return <p>Cargando juego...</p>
 
   if (!game) return <p>Juego no encontrado</p>
 
@@ -73,22 +108,25 @@ export default function PlayPage({ params }) {
     <section>
       <h1>{game.title}</h1>
 
+      <h2>Juegos</h2>
       <div className="cards-grid">
-        {cards.map((card) => {
-          switch (card.type) {
-            case "riddle":
-              return <RiddleCard key={card.id} card={card} />
+        {cards.map((card) => (
+          <GameCardRouter
+            key={card.id}
+            card={card}
+            isUnlocked={unlockedCards.includes(card.id)}
+            unlock={() => unlockCard(card.id)}
+          />
+        ))}
+      </div>
 
-            case "minesweeper":
-              return <MinesweeperCard key={card.id} card={card} />
-
-            case "sudoku":
-              return <SudokuCard key={card.id} card={card} />
-
-            default:
-              return <GameCard key={card.id} card={card} />
-          }
-        })}
+      <h2>Tus tickets</h2>
+      <div className="tickets-grid">
+        {cards
+          .filter((c) => unlockedCards.includes(c.id))
+          .map((card) => (
+            <TicketCard key={card.id} card={card} />
+          ))}
       </div>
     </section>
   )

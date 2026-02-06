@@ -5,32 +5,67 @@ import { supabase } from "../lib/supabaseClient"
 
 export default function useCardUnlock(gameId, playerId) {
   const [unlockedCards, setUnlockedCards] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!playerId) return
+    if (!playerId || !gameId) return
+
+    let isMounted = true
 
     const fetchUnlocked = async () => {
+      setLoading(true)
+
       const { data, error } = await supabase
         .from("unlocked_cards")
         .select("card_id")
         .eq("player_id", playerId)
-      if (!error) setUnlockedCards(data.map(c => c.card_id))
+
+      if (error) {
+        console.error("Error cargando progreso:", error.message)
+        if (isMounted) setUnlockedCards([])
+      } else {
+        if (isMounted) {
+          setUnlockedCards(data.map((c) => c.card_id))
+        }
+      }
+
+      if (isMounted) setLoading(false)
     }
 
     fetchUnlocked()
-  }, [playerId])
+
+    return () => {
+      isMounted = false
+    }
+  }, [playerId, gameId])
 
   const unlockCard = async (cardId) => {
+    if (!playerId) return
     if (unlockedCards.includes(cardId)) return
 
     const { error } = await supabase
       .from("unlocked_cards")
-      .insert([{ player_id: playerId, card_id: cardId }])
+      .insert([
+        {
+          player_id: playerId,
+          card_id: cardId,
+        },
+      ])
 
-    if (!error) setUnlockedCards(prev => [...prev, cardId])
+    if (error) {
+      console.error("Error desbloqueando carta:", error.message)
+      return
+    }
+
+    setUnlockedCards((prev) => [...prev, cardId])
   }
 
   const isUnlocked = (cardId) => unlockedCards.includes(cardId)
 
-  return { unlockCard, isUnlocked }
+  return {
+    unlockedCards,
+    isUnlocked,
+    unlockCard,
+    loading,
+  }
 }

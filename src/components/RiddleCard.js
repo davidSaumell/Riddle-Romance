@@ -1,35 +1,29 @@
 "use client"
 
 import { useState } from "react"
-import GameCard from "./GameCard"
 
-export default function RiddleCard({ card }) {
+export default function RiddleCard({ card, isUnlocked, unlock }) {
   const [answer, setAnswer] = useState("")
-  const [completed, setCompleted] = useState(false)
+
+  if (isUnlocked) return null
 
   const checkAnswer = () => {
-    if (answer.toLowerCase().trim() === card.answer.toLowerCase()) {
-      setCompleted(true)
+    if (answer.trim().toLowerCase() === card.answer.toLowerCase()) {
+      unlock(card.id)
     }
   }
 
   return (
-    <GameCard flipped={completed} status={completed ? "completed" : "active"}>
-      <>
-        <div className="card-front">
-          <h3>{card.question}</h3>
-          <input
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Tu respuesta..."
-          />
-          <button onClick={checkAnswer}>Comprobar</button>
-        </div>
+    <div className="game-card">
+      <h3>{card.question}</h3>
 
-        <div className="card-back">
-          🎁 {card.reward}
-        </div>
-      </>
-    </GameCard>
+      <input
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+        placeholder="Tu respuesta..."
+      />
+
+      <button onClick={checkAnswer}>Comprobar</button>
+    </div>
   )
 }

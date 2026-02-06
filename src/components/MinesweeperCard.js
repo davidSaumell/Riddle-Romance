@@ -1,30 +1,25 @@
 "use client"
 
 import { useState } from "react"
-import GameCard from "./GameCard"
 
-export default function MinesweeperCard({ card }) {
-  const [completed, setCompleted] = useState(false)
+export default function MinesweeperCard({ card, isUnlocked, unlock }) {
+  const [clicked, setClicked] = useState(false)
+
+  if (isUnlocked) return null
+
+  const handleClick = () => {
+    setClicked(true)
+    unlock(card.id)
+  }
 
   return (
-    <GameCard flipped={completed} status={completed ? "completed" : "active"}>
-      <>
-        <div className="card-front">
-          <h3>💣 Buscaminas</h3>
+    <div className="game-card">
+      <h3>{card.title}</h3>
+      <p>{card.description}</p>
 
-          <p>
-            Evita las minas y completa el tablero.
-          </p>
-
-          <button onClick={() => setCompleted(true)}>
-            Marcar como completado
-          </button>
-        </div>
-
-        <div className="card-back">
-          🎁 {card.reward}
-        </div>
-      </>
-    </GameCard>
+      <button onClick={handleClick} disabled={clicked}>
+        {clicked ? "Completado" : "Descubrir casilla"}
+      </button>
+    </div>
   )
 }
