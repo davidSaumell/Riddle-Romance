@@ -200,6 +200,7 @@ section {
 
 .modal {
   background: white;
+  border: 5px solid #ff9fc7;
   border-radius: 20px;
   padding: 24px;
   width: 420px;
@@ -228,6 +229,7 @@ section {
 
 .modal-header h2 {
   font-size: 1.2rem;
+  margin: 16px 0;
 }
 
 .modal-header .close {
@@ -254,7 +256,7 @@ section {
   height: 36px;
   text-align: center;
   font-size: 16px;
-  border-radius: 6px;
+  border-radius: 2px;
   border: 1px solid #ccc;
   cursor: pointer;
 }
@@ -278,6 +280,130 @@ section {
   border-right: 2px solid #444;
 }
 
+.sudoku-cell.highlight {
+  background: #ffe4f1;
+  border-color: #ff7ab6;
+}
+
+.sudoku-complete-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 122, 182, 0.15);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ff5fa6;
+  border-radius: 20px;
+  animation: sudokuWin 0.35s ease-out;
+}
+
+@keyframes sudokuWin {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.correct-anim {
+  animation: popCorrect 0.18s ease-out;
+  background: #eaf9ff !important;
+}
+
+@keyframes popCorrect {
+  0% {
+    transform: scale(0.9);
+  }
+  70% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ---------- ERROR FEEDBACK ---------- */
+
+.error-anim {
+  background: #ffe6ea !important;
+  border-color: #ff4d6d !important;
+  animation: errorShake 0.4s ease;
+}
+
+.error-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: #f1f1f1;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.error-counter span {
+  font-weight: 800;
+}
+
+.error-counter.has-errors {
+  background: #ffe3e8;
+  color: #c0392b;
+  box-shadow: 0 6px 14px rgba(192, 57, 43, 0.15);
+}
+
+.error-pulse {
+  animation: errorPulse 0.4s ease;
+}
+
+@keyframes errorPulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes errorShake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-3px); }
+  40%  { transform: translateX(3px); }
+  60%  { transform: translateX(-2px); }
+  80%  { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+/* =========================
+   LIVES SYSTEM
+========================= */
+
+.lives {
+  display: flex;
+  gap: 6px;
+  font-size: 18px;
+  justify-content: center;
+}
+
+.heart {
+  transition: all 0.25s ease;
+}
+
+.heart.alive {
+  color: #ff5fa6;
+  filter: drop-shadow(0 2px 6px rgba(255, 95, 166, 0.5));
+}
+
+.heart.dead {
+  color: #ddd;
+  transform: scale(0.9);
+  opacity: 0.6;
+}
+
 .error {
   color: #c0392b;
   text-align: center;
@@ -288,7 +414,6 @@ section {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   gap: 6px;
-  margin-top: 16px;
 }
 
 .digits button {
@@ -306,6 +431,17 @@ section {
   border-color: #ff7ab6;
 }
 
+.digits button:disabled,
+.digits button.digit-disabled {
+  background: #f2f2f2;
+  color: #bbb;
+  border-color: #e0e0e0;
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: scale(0.96);
+}
+
+
 /* =========================
    RESPONSIVE
 ========================= */
@@ -322,6 +458,7 @@ section {
   .modal {
     width: 95%;
     padding: 20px;
+    position: relative;
   }
 
   .sudoku-grid {

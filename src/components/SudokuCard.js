@@ -32,7 +32,17 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
   const [grid, setGrid] = useState(
     board.map((row) => row.split(""))
   )
+  const MAX_LIVES = 3
   const [errors, setErrors] = useState(0)
+  const livesLeft = MAX_LIVES - errors
+  const [animatedCell, setAnimatedCell] = useState(null)
+  const [errorCell, setErrorCell] = useState(null)
+  const [errorAnim, setErrorAnim] = useState(false)
+  const [completed, setCompleted] = useState(false)
+  
+  const countNumber = (num) => {
+    return grid.flat().filter((c) => c === num).length
+  }
 
   if (isUnlocked) return null
 
@@ -45,16 +55,37 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
       newGrid[r][c] = selectedNumber
       setGrid(newGrid)
 
+      setAnimatedCell(`${r}-${c}`)
+      setTimeout(() => setAnimatedCell(null), 180)
+
       const finished = newGrid.every((row, i) =>
         row.every((cell, j) => cell === solution[i][j])
       )
 
       if (finished) {
-        unlock(card.id)
-        setOpen(false)
+        setCompleted(true)
+
+        setTimeout(() => {
+          unlock(card.id)
+          setOpen(false)
+          setCompleted(false)
+        }, 1400)
       }
     } else {
-      setErrors((e) => e + 1)
+      setErrors((e) => Math.min(e + 1, MAX_LIVES))
+      if (errors + 1 >= MAX_LIVES) {
+        setTimeout(() => {
+          alert("Has perdido 😢")
+          setOpen(false)
+        }, 300)
+      }
+      setErrorCell(`${r}-${c}`)
+      setErrorAnim(true)
+
+      setTimeout(() => {
+        setErrorCell(null)
+        setErrorAnim(false)
+      }, 500)
     }
   }
 
@@ -62,7 +93,7 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
     <>
       <div className="game-card">
         <h3>Sudoku</h3>
-        <p>Completa el sudoku sin errores</p>
+        <p>Completa el sudoku</p>
         <button onClick={() => setOpen(true)}>Empezar</button>
       </div>
 
@@ -76,7 +107,16 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
               </button>
             </div>
 
-            <p>Errores: {errors}</p>
+            <div className="lives">
+              {[1, 2, 3].map((i) => (
+                <span
+                  key={i}
+                  className={`heart ${i <= livesLeft ? "alive" : "dead"}`}
+                >
+                  ❤
+                </span>
+              ))}
+            </div>
 
             <div className="sudoku-grid">
               {grid.map((row, r) =>
@@ -88,8 +128,11 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
                       className={`
                         sudoku-cell
                         ${fixed ? "fixed" : ""}
+                        ${cell === selectedNumber ? "highlight" : ""}
                         ${r === 2 || r === 5 ? "bottom-border" : ""}
                         ${c === 2 || c === 5 ? "right-border" : ""}
+                        ${animatedCell === `${r}-${c}` ? "correct-anim" : ""}
+                        ${errorCell === `${r}-${c}` ? "error-anim" : ""}
                       `}
                       value={cell === "-" ? "" : cell}
                       readOnly
@@ -101,16 +144,31 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
             </div>
 
             <div className="digits">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-                <button
-                  key={n}
-                  className={selectedNumber === String(n) ? "selected" : ""}
-                  onClick={() => setSelectedNumber(String(n))}
-                >
-                  {n}
-                </button>
-              ))}
+              {[1,2,3,4,5,6,7,8,9].map((n) => {
+                const value = String(n)
+                const usedUp = countNumber(value) >= 9
+
+                return (
+                  <button
+                    key={n}
+                    disabled={usedUp}
+                    className={`
+                      ${selectedNumber === value ? "selected" : ""}
+                      ${usedUp ? "digit-disabled" : ""}
+                    `}
+                    onClick={() => setSelectedNumber(value)}
+                  >
+                    {n}
+                  </button>
+                )
+              })}
             </div>
+
+            {completed && (
+              <div className="sudoku-complete-overlay">
+                ✓ Completado
+              </div>
+            )}
           </div>
         </div>
       )}
