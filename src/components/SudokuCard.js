@@ -1,47 +1,44 @@
 "use client"
 
 import { useState } from "react"
-
-const board = [
-  "--74916-5",
-  "2---6-3-9",
-  "-----7-1-",
-  "-586----4",
-  "--3----9-",
-  "--62--187",
-  "9-4-7---2",
-  "67-83----",
-  "81--45---",
-]
-
-const solution = [
-  "387491625",
-  "241568379",
-  "569327418",
-  "758619234",
-  "123784596",
-  "496253187",
-  "934176852",
-  "675832941",
-  "812945763",
-]
+import { supabase } from "@/lib/supabaseClient"
 
 export default function SudokuCard({ card, isUnlocked, unlock }) {
   const [open, setOpen] = useState(false)
   const [selectedNumber, setSelectedNumber] = useState(null)
-  const [grid, setGrid] = useState(
-    board.map((row) => row.split(""))
-  )
+  const [grid, setGrid] = useState([])
+  const [sudoku, setSudoku] = useState(null)
+
   const MAX_LIVES = 3
   const [errors, setErrors] = useState(0)
   const livesLeft = MAX_LIVES - errors
   const [animatedCell, setAnimatedCell] = useState(null)
   const [errorCell, setErrorCell] = useState(null)
-  const [errorAnim, setErrorAnim] = useState(false)
   const [completed, setCompleted] = useState(false)
-  
+
   const countNumber = (num) => {
     return grid.flat().filter((c) => c === num).length
+  }
+
+  const loadSudoku = async () => {
+    const difficulty = card.difficulty ?? "easy"
+
+    if (!card.difficulty) {
+      console.warn("Sudoku sin dificultad definida → usando easy", card)
+    }
+
+    const { data, error } = await supabase
+      .from("sudokus")
+      .select("*")
+      .eq("difficulty", difficulty)
+
+    if (error || !data.length) return
+
+    const random = data[Math.floor(Math.random() * data.length)]
+    setSudoku(random)
+    setGrid(random.board.map((r) => r.split("")))
+    setErrors(0)
+    setSelectedNumber(null)
   }
 
   if (isUnlocked) return null
@@ -50,21 +47,20 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
     if (!selectedNumber) return
     if (grid[r][c] !== "-") return
 
-    if (solution[r][c] === selectedNumber) {
+    if (sudoku.solution[r][c] === selectedNumber) {
       const newGrid = grid.map((row) => [...row])
       newGrid[r][c] = selectedNumber
       setGrid(newGrid)
 
       setAnimatedCell(`${r}-${c}`)
-      setTimeout(() => setAnimatedCell(null), 180)
+      setTimeout(() => setAnimatedCell(null), 200)
 
       const finished = newGrid.every((row, i) =>
-        row.every((cell, j) => cell === solution[i][j])
+        row.every((cell, j) => cell === sudoku.solution[i][j])
       )
 
       if (finished) {
         setCompleted(true)
-
         setTimeout(() => {
           unlock(card.id)
           setOpen(false)
@@ -73,19 +69,16 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
       }
     } else {
       setErrors((e) => Math.min(e + 1, MAX_LIVES))
+      setErrorCell(`${r}-${c}`)
+
+      setTimeout(() => setErrorCell(null), 500)
+
       if (errors + 1 >= MAX_LIVES) {
         setTimeout(() => {
           alert("Has perdido 😢")
           setOpen(false)
         }, 300)
       }
-      setErrorCell(`${r}-${c}`)
-      setErrorAnim(true)
-
-      setTimeout(() => {
-        setErrorCell(null)
-        setErrorAnim(false)
-      }, 500)
     }
   }
 
@@ -93,11 +86,18 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
     <>
       <div className="game-card">
         <h3>Sudoku</h3>
-        <p>Completa el sudoku</p>
-        <button onClick={() => setOpen(true)}>Empezar</button>
+        <p>Dificultad: {card.difficulty || "easy"}</p>
+        <button
+          onClick={() => {
+            loadSudoku()
+            setOpen(true)
+          }}
+        >
+          Empezar
+        </button>
       </div>
 
-      {open && (
+      {open && sudoku && (
         <div className="modal-overlay">
           <div className="modal">
             <div className="modal-header">
@@ -121,7 +121,7 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
             <div className="sudoku-grid">
               {grid.map((row, r) =>
                 row.map((cell, c) => {
-                  const fixed = board[r][c] !== "-"
+                  const fixed = sudoku.board[r][c] !== "-"
                   return (
                     <input
                       key={`${r}-${c}`}
@@ -144,7 +144,7 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
             </div>
 
             <div className="digits">
-              {[1,2,3,4,5,6,7,8,9].map((n) => {
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => {
                 const value = String(n)
                 const usedUp = countNumber(value) >= 9
 

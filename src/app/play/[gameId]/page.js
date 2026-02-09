@@ -110,6 +110,10 @@ export default function PlayPage({ params }) {
 
       <h2>Juegos</h2>
       <div className="cards-grid">
+        {cards.map(card => {
+          console.log(card)
+        })}
+
         {cards.map((card) => (
           <GameCardRouter
             key={card.id}
