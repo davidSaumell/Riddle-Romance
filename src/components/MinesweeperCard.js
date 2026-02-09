@@ -78,6 +78,14 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
     }
   }
 
+  const toggleFlag = (key) => {
+    if (gameOver || revealed.has(key)) return
+
+    const newFlags = new Set(flags)
+    newFlags.has(key) ? newFlags.delete(key) : newFlags.add(key)
+    setFlags(newFlags)
+  }
+
   const handleClick = (r, c) => {
     if (gameOver) return
 
@@ -172,6 +180,10 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
                         ${isMine && isRevealed ? "mine" : ""}
                       `}
                       onClick={() => handleClick(r, c)}
+                      onContextMenu={(e) => {
+                        e.preventDefault()
+                        toggleFlag(key)
+                      }}
                     >
                       {content}
                     </div>
