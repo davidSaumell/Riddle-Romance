@@ -16,28 +16,47 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
   const [gameOver, setGameOver] = useState(false)
   const [won, setWon] = useState(false)
   const [explodingCell, setExplodingCell] = useState(null)
+  const [firstClick, setFirstClick] = useState(true)
 
   if (isUnlocked) return null
 
   const startGame = () => {
-    const minesSet = new Set()
-    while (minesSet.size < MINES) {
-      const r = Math.floor(Math.random() * ROWS)
-      const c = Math.floor(Math.random() * COLS)
-      minesSet.add(`${r}-${c}`)
-    }
-
     setGrid(Array.from({ length: ROWS }, () => Array(COLS).fill("")))
-    setMines(minesSet)
+    setMines(new Set())
     setRevealed(new Set())
     setFlags(new Set())
     setFlagMode(false)
     setGameOver(false)
     setWon(false)
     setExplodingCell(null)
+    setFirstClick(true)
   }
 
-  const countMines = (r, c) => {
+  const generateMines = (safeR, safeC) => {
+    const minesSet = new Set()
+
+    const forbidden = new Set()
+    for (let dr = -1; dr <= 1; dr++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        forbidden.add(`${safeR + dr}-${safeC + dc}`)
+      }
+    }
+
+    while (minesSet.size < MINES) {
+      const r = Math.floor(Math.random() * ROWS)
+      const c = Math.floor(Math.random() * COLS)
+      const key = `${r}-${c}`
+
+      if (!forbidden.has(key)) {
+        minesSet.add(key)
+      }
+    }
+
+    setMines(minesSet)
+    return minesSet
+  }
+
+  const countMines = (r, c, minesSet = mines) => {
     let count = 0
     for (let dr = -1; dr <= 1; dr++) {
       for (let dc = -1; dc <= 1; dc++) {
@@ -49,7 +68,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
           nr < ROWS &&
           nc >= 0 &&
           nc < COLS &&
-          mines.has(`${nr}-${nc}`)
+          minesSet.has(`${nr}-${nc}`)
         ) {
           count++
         }
@@ -58,7 +77,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
     return count
   }
 
-  const floodFill = (r, c, newRevealed) => {
+  const floodFill = (r, c, newRevealed, minesSet = mines) => {
     const key = `${r}-${c}`
     if (
       r < 0 ||
@@ -71,10 +90,10 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
 
     newRevealed.add(key)
 
-    if (countMines(r, c) === 0) {
+    if (countMines(r, c, minesSet) === 0) {
       for (let dr = -1; dr <= 1; dr++) {
         for (let dc = -1; dc <= 1; dc++) {
-          floodFill(r + dr, c + dc, newRevealed)
+          floodFill(r + dr, c + dc, newRevealed, minesSet)
         }
       }
     }
@@ -102,6 +121,16 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
     if (gameOver) return
 
     const key = `${r}-${c}`
+
+    if (firstClick) {
+      const newMines = generateMines(r, c)
+      setFirstClick(false)
+
+      const newRevealed = new Set(revealed)
+      floodFill(r, c, newRevealed, newMines)
+      setRevealed(newRevealed)
+      return
+    }
 
     if (flagMode) {
       const newFlags = new Set(flags)
