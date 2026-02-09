@@ -311,6 +311,62 @@ section {
   }
 }
 
+/* =========================
+   MINESWEEPER
+========================= */
+
+.minesweeper-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 40px);
+  gap: 2px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.mine-cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mine-cell:hover {
+  background: #fff0f7;
+}
+
+.mine-cell.revealed {
+  background: #ff9fc7;
+  cursor: default;
+}
+
+.mine-cell.mine {
+  background: #ed1010a8;
+}
+
+.minesweeper-toolbar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.minesweeper-toolbar button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #1f2937;
+}
+
+.flag-active {
+  background: #f59e0b;
+  color: black;
+}
+
 .correct-anim {
   animation: popCorrect 0.18s ease-out;
   background: #eaf9ff !important;
