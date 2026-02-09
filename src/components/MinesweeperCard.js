@@ -15,6 +15,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
   const [flagMode, setFlagMode] = useState(false)
   const [gameOver, setGameOver] = useState(false)
   const [won, setWon] = useState(false)
+  const [explodingCell, setExplodingCell] = useState(null)
 
   if (isUnlocked) return null
 
@@ -33,6 +34,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
     setFlagMode(false)
     setGameOver(false)
     setWon(false)
+    setExplodingCell(null)
   }
 
   const countMines = (r, c) => {
@@ -86,6 +88,16 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
     setFlags(newFlags)
   }
 
+  const revealAllMines = () => {
+    setRevealed((prev) => {
+      const copy = prev.map((row) => [...row])
+      mines.forEach(([r, c]) => {
+        copy[r][c] = true
+      })
+      return copy
+    })
+  }
+
   const handleClick = (r, c) => {
     if (gameOver) return
 
@@ -101,10 +113,12 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
     if (flags.has(key)) return
 
     if (mines.has(key)) {
+      setExplodingCell(key)
       setGameOver(true)
-      setRevealed(
-        new Set([...revealed, ...mines])
-      )
+
+      setTimeout(() => {
+        setRevealed(new Set([...revealed, ...mines]))
+      }, 350)
       return
     }
 
@@ -178,6 +192,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
                         mine-cell
                         ${isRevealed ? "revealed" : ""}
                         ${isMine && isRevealed ? "mine" : ""}
+                        ${explodingCell === `${r}-${c}` ? "exploding" : ""}
                       `}
                       onClick={() => handleClick(r, c)}
                       onContextMenu={(e) => {

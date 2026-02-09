@@ -393,6 +393,32 @@ section {
   }
 }
 
+.mine-cell.exploding {
+  animation: explode 0.45s ease-out;
+  background: radial-gradient(circle, #ff4d4d, #b30000);
+  color: white;
+  transform-origin: center;
+  z-index: 2;
+}
+
+@keyframes explode {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1.15) rotate(2deg);
+    filter: brightness(1.8);
+  }
+  60% {
+    transform: scale(0.95) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
 .correct-anim {
   animation: popCorrect 0.18s ease-out;
   background: #eaf9ff !important;
