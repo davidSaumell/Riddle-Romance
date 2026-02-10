@@ -742,3 +742,59 @@ section {
   transition: width 0.6s cubic-bezier(.4,0,.2,1);
   box-shadow: 0 0 14px rgba(74,222,128,.5);
 }
+
+/* =========================
+   WORDLE
+========================= */
+
+.wordle-grid {
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  gap: 6px;
+  justify-content: center;
+  margin: 18px 0;
+}
+
+.wordle-row {
+  display: grid;
+  grid-template-columns: repeat(5, 48px);
+  gap: 6px;
+}
+
+.wordle-cell {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  border: 2px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.15rem;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+}
+
+.wordle-cell.correct {
+  background: #22c55e;
+  color: white;
+  border-color: #22c55e;
+}
+
+.wordle-cell.present {
+  background: #facc15;
+  color: #222;
+  border-color: #facc15;
+}
+
+.wordle-cell.absent {
+  background: #9ca3af;
+  color: white;
+  border-color: #9ca3af;
+}
+
+.wordle-lost {
+  margin-top: 12px;
+  text-align: center;
+  font-weight: 600;
+}

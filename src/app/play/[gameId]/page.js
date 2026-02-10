@@ -145,7 +145,7 @@ export default function PlayPage({ params }) {
         </div>
       </section>
       <section>
-        <h2>Tus tickets</h2>
+        <h2>Tickets</h2>
         <div className="tickets-grid">
           {cards
             .filter((c) => unlockedCards.includes(c.id))
