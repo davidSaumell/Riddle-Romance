@@ -93,7 +93,7 @@ export default function SudokuCard({ card, isUnlocked, unlock, justUnlocked }) {
             setOpen(true)
           }}
         >
-          Empezar
+          Començar
         </button>
       </div>
 

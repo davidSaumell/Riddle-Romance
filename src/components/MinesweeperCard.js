@@ -200,7 +200,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock, justUnlocked
             setOpen(true)
           }}
         >
-          Empezar
+          Començar
         </button>
       </div>
 
