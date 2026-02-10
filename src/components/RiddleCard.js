@@ -20,7 +20,7 @@ export default function RiddleCard({ card, isUnlocked, unlock }) {
       <input
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
-        placeholder="Tu respuesta..."
+        placeholder="La teva resposta..."
       />
 
       <button onClick={checkAnswer}>Comprobar</button>

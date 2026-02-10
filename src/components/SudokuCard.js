@@ -86,7 +86,7 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
     <>
       <div className="game-card">
         <h3>Sudoku</h3>
-        <p>Dificultad: {card.difficulty || "easy"}</p>
+        <p>Dificultat: {card.difficulty || "easy"}</p>
         <button
           onClick={() => {
             loadSudoku()

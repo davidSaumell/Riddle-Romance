@@ -100,38 +100,54 @@ export default function PlayPage({ params }) {
     init()
   }, [gameId])
 
-  if (loadingGame || loadingProgress) return <p>Cargando juego...</p>
+  if (loadingGame || loadingProgress) return <p>Cargando juego...</p> //TODO: Afegir un spiner
 
   if (!game) return <p>Juego no encontrado</p>
 
   return (
-    <section>
-      <h1>{game.title}</h1>
+    <>
+      <header className="play-intro">
+        <h1>Desbloqueja la nostra aventura</h1>
 
-      <h2>Juegos</h2>
-      <div className="cards-grid">
-        {cards.map(card => {
-          console.log(card)
-        })}
+        <p>
+          Devant teu trobaràs una serie de cartes ocultes amb jocs y reptes.
+          Supera cada repte per desbloquejar recompenses especials pensades per disfrutar en parella.
+        </p>
 
-        {cards.map((card) => (
-          <GameCardRouter
-            key={card.id}
-            card={card}
-            isUnlocked={unlockedCards.includes(card.id)}
-            unlock={() => unlockCard(card.id)}
-          />
-        ))}
-      </div>
+        <div className="play-intro-actions">
+          <div>🃏 Completa una carta per començar</div>
+          <div>🎁 Conseguex tiquets amb sorpreses úniques</div>
+        </div>
+      </header>
 
-      <h2>Tus tickets</h2>
-      <div className="tickets-grid">
-        {cards
-          .filter((c) => unlockedCards.includes(c.id))
-          .map((card) => (
-            <TicketCard key={card.id} card={card} />
+      <section>
+        <h1>{game.title}</h1>
+
+        <h2>Juegos</h2>
+        <div className="cards-grid">
+          {cards.map(card => {
+            console.log(card)
+          })}
+
+          {cards.map((card) => (
+            <GameCardRouter
+              key={card.id}
+              card={card}
+              isUnlocked={unlockedCards.includes(card.id)}
+              unlock={() => unlockCard(card.id)}
+            />
           ))}
-      </div>
-    </section>
+        </div>
+
+        <h2>Tus tickets</h2>
+        <div className="tickets-grid">
+          {cards
+            .filter((c) => unlockedCards.includes(c.id))
+            .map((card) => (
+              <TicketCard key={card.id} card={card} />
+            ))}
+        </div>
+      </section>
+    </>
   )
 }

@@ -579,3 +579,32 @@ section {
     font-size: 14px;
   }
 }
+
+.play-intro {
+  max-width: 1000px;
+  margin: 30px auto 50px;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.play-intro h1 {
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.play-intro p {
+  max-width: 720px;
+  margin: 0 auto 20px;
+  font-size: 1.05rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.play-intro-actions {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-weight: 600;
+}

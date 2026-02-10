@@ -192,8 +192,8 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
   return (
     <>
       <div className="game-card">
-        <h3>Minesweeper</h3>
-        <p>Dificultad: {difficulty}</p>
+        <h3>Pescamines</h3>
+        <p>Dificultat: {difficulty}</p>
         <button
           onClick={() => {
             startGame()
