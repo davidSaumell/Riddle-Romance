@@ -2,11 +2,36 @@
 
 import { useState } from "react"
 
-const ROWS = 8
-const COLS = 8
-const MINES = 10
+const DIFFICULTY_CONFIG = {
+  easy: {
+    desktop: { rows: 8, cols: 8, mines: 10 },
+    mobile:  { rows: 10, cols: 6, mines: 10 }
+  },
+  medium: {
+    desktop: { rows: 12, cols: 12, mines: 25 },
+    mobile:  { rows: 16, cols: 8, mines: 25 }
+  },
+  hard: {
+    desktop: { rows: 16, cols: 16, mines: 45 },
+    mobile:  { rows: 25, cols: 10, mines: 45 }
+  }
+}
 
 export default function MinesweeperCard({ card, isUnlocked, unlock }) {
+  const difficulty = card.difficulty ?? "easy"
+  
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 640
+  const { rows: ROWS, cols: COLS, mines: MINES } =
+    DIFFICULTY_CONFIG[difficulty][isMobile ? "mobile" : "desktop"]
+
+  const CELL_SIZE = isMobile ? 34 : 40
+  const GAP = 2
+
+  const modalWidth = Math.min(
+    COLS * (CELL_SIZE + GAP) + 80,
+    window.innerWidth * 0.95
+  )
+
   const [open, setOpen] = useState(false)
   const [grid, setGrid] = useState([])
   const [mines, setMines] = useState([])
@@ -168,6 +193,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
     <>
       <div className="game-card">
         <h3>Minesweeper</h3>
+        <p>Dificultad: {difficulty}</p>
         <button
           onClick={() => {
             startGame()
@@ -180,7 +206,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
 
       {open && (
         <div className="modal-overlay">
-          <div className="modal">
+          <div className="modal" style={{ width: modalWidth }}>
             <div className="modal-header">
               <h2>Buscaminas</h2>
               <button className="close" onClick={() => setOpen(false)}>
@@ -199,7 +225,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
               <span>🚩 {flags.size}</span>
             </div>
 
-            <div className="minesweeper-grid">
+            <div className="minesweeper-grid" style={{ gridTemplateColumns: `repeat(${COLS}, 40px)` }}>
               {grid.map((row, r) =>
                 row.map((_, c) => {
                   const key = `${r}-${c}`
