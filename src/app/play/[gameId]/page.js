@@ -14,6 +14,7 @@ export default function PlayPage({ params }) {
   const [game, setGame] = useState(null)
   const [cards, setCards] = useState([])
   const [playerId, setPlayerId] = useState(null)
+  const [justUnlocked, setJustUnlocked] = useState(null)
 
   // Hook que maneja cartas desbloqueadas en Supabase
   const { unlockedCards, unlockCard, loading: loadingProgress } =
@@ -121,8 +122,7 @@ export default function PlayPage({ params }) {
       </header>
 
       <section>
-        <h1>{game.title}</h1>
-
+        {/* <h1>{game.title}</h1> */}
         <h2>Juegos</h2>
         <div className="cards-grid">
           {cards.map(card => {
@@ -134,11 +134,17 @@ export default function PlayPage({ params }) {
               key={card.id}
               card={card}
               isUnlocked={unlockedCards.includes(card.id)}
-              unlock={() => unlockCard(card.id)}
+              justUnlocked={justUnlocked === card.id}
+              unlock={() => {
+                unlockCard(card.id)
+                setJustUnlocked(card.id)
+                setTimeout(() => setJustUnlocked(null), 1200)
+              }}
             />
           ))}
         </div>
-
+      </section>
+      <section>
         <h2>Tus tickets</h2>
         <div className="tickets-grid">
           {cards
@@ -146,6 +152,28 @@ export default function PlayPage({ params }) {
             .map((card) => (
               <TicketCard key={card.id} card={card} />
             ))}
+        </div>
+      </section>
+     <section className="progress-section">
+        <div className="progress-box">
+          <span>Complertes:</span>
+          <strong>
+            <span className="progress-current">
+              {unlockedCards.length}
+            </span>
+            {" / "}
+            <span className="progress-total">
+              {cards.length}
+            </span>
+          </strong>
+        </div>
+        <div className="progress-bar-track">
+          <div
+            className="progress-bar-fill"
+            style={{
+              width: `${(unlockedCards.length / cards.length) * 100}%`,
+            }}
+          />
         </div>
       </section>
     </>

@@ -19,7 +19,7 @@ h1 {
 
 h2 {
   font-size: 1.4rem;
-  margin: 32px 0 16px;
+  margin: 16px 0 16px;
 }
 
 h3 {
@@ -73,6 +73,15 @@ section {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  will-change: transform;
+}
+
+.game-card:hover {
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.10);
 }
 
 .game-card input {
@@ -95,6 +104,8 @@ section {
 
 .game-card button:hover {
   background: #ff5fa6;
+  transform: translateY(-1px) scale(1.015);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.10);
 }
 
 /* =========================
@@ -120,6 +131,15 @@ section {
   overflow: hidden;
   border: 1px dashed #f3c6a5;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+  will-change: transform;
+}
+
+.ticket:hover {
+  transform: translateY(-2px) scale(1.015);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.10);
 }
 
 .ticket-content p {
@@ -218,6 +238,35 @@ section {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* =========================
+   RIDDLE ERROR FEEDBACK
+========================= */
+
+@keyframes riddle-shake {
+  0%   { transform: translateX(0); }
+  15%  { transform: translateX(-6px); }
+  30%  { transform: translateX(6px); }
+  45%  { transform: translateX(-5px); }
+  60%  { transform: translateX(5px); }
+  75%  { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes riddle-flash {
+  0%   { background: rgba(239, 68, 68, 0.0); }
+  30%  { background: rgba(239, 68, 68, 0.18); }
+  60%  { background: rgba(239, 68, 68, 0.1); }
+  100% { background: rgba(239, 68, 68, 0); }
+}
+
+.riddle-error {
+  animation:
+    riddle-shake 0.45s cubic-bezier(.36,.07,.19,.97),
+    riddle-flash 0.45s ease;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 12px;
 }
 
 .modal-header {
@@ -591,6 +640,7 @@ section {
   font-size: clamp(1.9rem, 4vw, 2.8rem);
   font-weight: 800;
   margin-bottom: 12px;
+  animation: fadeSlideIn 0.45s ease-out both;
 }
 
 .play-intro p {
@@ -599,6 +649,8 @@ section {
   font-size: 1.05rem;
   color: #555;
   line-height: 1.6;
+  animation: fadeSlideIn 0.45s ease-out both;
+  animation-delay: 0.05s;
 }
 
 .play-intro-actions {
@@ -607,4 +659,86 @@ section {
   gap: 24px;
   flex-wrap: wrap;
   font-weight: 600;
+  animation: fadeSlideIn 0.45s ease-out both;
+  animation-delay: 0.1s;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes unlock-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.12) rotate(1deg); }
+  60%  { transform: scale(0.96) rotate(-1deg); }
+  80%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+@keyframes unlock-glow {
+  0%   { box-shadow: 0 0 0 rgba(255,105,180,0); }
+  50%  { box-shadow: 0 0 30px rgba(255,105,180,0.9); }
+  100% { box-shadow: 0 0 0 rgba(255,105,180,0); }
+}
+
+.game-card.unlock-anim {
+  animation:
+    unlock-pop 0.6s ease,
+    unlock-glow 1s ease;
+  z-index: 5;
+}
+
+/* =========================
+   PROGRESS SECTION
+========================= */
+
+.progress-section {
+  margin-top: 48px;
+  padding: 24px 20px;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #0f172a, #020617);
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+  text-align: center;
+}
+
+.progress-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #d1d5db;
+  margin-bottom: 10px;
+}
+
+.progress-current {
+  color: #4ade80;
+  font-size: 1.3rem;
+}
+
+.progress-total {
+  color: #60a5fa;
+  font-size: 1.15rem;
+}
+
+.progress-bar-track {
+  height: 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.08);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #22c55e, #4ade80, #60a5fa);
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 14px rgba(74,222,128,.5);
 }

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
-export default function SudokuCard({ card, isUnlocked, unlock }) {
+export default function SudokuCard({ card, isUnlocked, unlock, justUnlocked }) {
   const [open, setOpen] = useState(false)
   const [selectedNumber, setSelectedNumber] = useState(null)
   const [grid, setGrid] = useState([])
@@ -84,7 +84,7 @@ export default function SudokuCard({ card, isUnlocked, unlock }) {
 
   return (
     <>
-      <div className="game-card">
+      <div className={`game-card ${justUnlocked ? "unlock-anim" : ""}`}>
         <h3>Sudoku</h3>
         <p>Dificultat: {card.difficulty || "easy"}</p>
         <button

@@ -17,7 +17,7 @@ const DIFFICULTY_CONFIG = {
   }
 }
 
-export default function MinesweeperCard({ card, isUnlocked, unlock }) {
+export default function MinesweeperCard({ card, isUnlocked, unlock, justUnlocked }) {
   const difficulty = card.difficulty ?? "easy"
   
   const isMobile = typeof window !== "undefined" && window.innerWidth < 640
@@ -191,7 +191,7 @@ export default function MinesweeperCard({ card, isUnlocked, unlock }) {
 
   return (
     <>
-      <div className="game-card">
+      <div className={`game-card ${justUnlocked ? "unlock-anim" : ""}`}>
         <h3>Pescamines</h3>
         <p>Dificultat: {difficulty}</p>
         <button
