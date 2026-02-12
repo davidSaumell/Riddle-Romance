@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
 const ROWS = 6
@@ -19,6 +19,7 @@ export default function WordleCard({ card, isUnlocked, unlock }) {
   const [col, setCol] = useState(0)
   const [won, setWon] = useState(false)
   const [lost, setLost] = useState(false)
+  const inputRef = useRef(null)
 
   const loadWord = async () => {
     const { data, error } = await supabase
@@ -119,6 +120,15 @@ export default function WordleCard({ card, isUnlocked, unlock }) {
     setCol(0)
   }
 
+  const handleMobileInput = (value) => {
+  const lastChar = value.slice(-1)
+  if (!lastChar) return
+
+  if (/^[a-zA-ZñÑ]$/.test(lastChar)) {
+    addLetter(lastChar.toUpperCase())
+  }
+}
+
   if (isUnlocked) return null
 
   return (
@@ -145,8 +155,19 @@ export default function WordleCard({ card, isUnlocked, unlock }) {
                 ✕
               </button>
             </div>
+            <input
+              ref={inputRef}
+              className="hidden-wordle-input"
+              autoFocus
+              onChange={(e) => handleMobileInput(e.target.value)}
+              value=""
+              inputMode="text"
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
+            />
 
-            <div className="wordle-grid">
+            <div className="wordle-grid" onClick={() => inputRef.current?.focus()}>
               {grid.map((r, ri) => (
                 <div key={ri} className="wordle-row">
                   {r.map((cell, ci) => (

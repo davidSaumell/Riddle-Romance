@@ -798,3 +798,10 @@ section {
   text-align: center;
   font-weight: 600;
 }
+
+.hidden-wordle-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  height: 0;
+}
