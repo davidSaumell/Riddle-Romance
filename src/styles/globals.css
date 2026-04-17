@@ -79,6 +79,7 @@ section {
   will-change: transform;
 }
 
+/* TO-DO: fer això en click no hover */
 .game-card:hover {
   transform: translateY(-2px) scale(1.015);
   box-shadow: 0 14px 36px rgba(0,0,0,0.10);
@@ -804,4 +805,51 @@ section {
   opacity: 0;
   pointer-events: none;
   height: 0;
+}
+
+/* =========================
+   STORY
+========================= */
+
+.story-modal {
+  max-width: 500px;
+}
+
+.story-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 16px;
+}
+
+.story-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.story-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.story-choices button {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #ff7ab6;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.story-choices button:hover {
+  background: #ff5fa6;
+}
+
+.story-end {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 10px;
 }

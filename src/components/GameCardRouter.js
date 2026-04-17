@@ -2,6 +2,7 @@ import RiddleCard from "./RiddleCard"
 import MinesweeperCard from "./MinesweeperCard"
 import SudokuCard from "./SudokuCard"
 import WordleCard from "./WordleCard"
+import StoryCard from "./StoryCard"
 
 export default function GameCardRouter({ card, isUnlocked, unlock, justUnlocked }) {
   switch (card.type) {
@@ -17,6 +18,9 @@ export default function GameCardRouter({ card, isUnlocked, unlock, justUnlocked 
     case "wordle":
       return <WordleCard card={card} isUnlocked={isUnlocked} unlock={unlock} justUnlocked={justUnlocked}/>
 
+    case "story":
+      return <StoryCard card={card} isUnlocked={isUnlocked} unlock={unlock} />
+    
     default:
       return null
   }
