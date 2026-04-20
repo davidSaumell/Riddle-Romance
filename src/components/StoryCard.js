@@ -8,6 +8,7 @@ export default function StoryCard({ card, isUnlocked, unlock }) {
   const [story, setStory] = useState(null)
   const [currentNode, setCurrentNode] = useState("start")
   const [loading, setLoading] = useState(false)
+  const [history, setHistory] = useState([])
 
   if (isUnlocked) return null
 
@@ -23,6 +24,7 @@ export default function StoryCard({ card, isUnlocked, unlock }) {
     if (!error) {
       setStory(data.nodes)
       setCurrentNode("start")
+      setHistory([])
     }
 
     setLoading(false)
@@ -31,37 +33,50 @@ export default function StoryCard({ card, isUnlocked, unlock }) {
   const handleChoice = (next) => {
     const node = story[next]
 
-    if (node.end) {
+    setHistory((prev) => [...prev, currentNode])
+    setCurrentNode(next)
+
+    if (node?.end) {
       setTimeout(() => {
         unlock(card.id)
-        setOpen(false)
       }, 800)
     }
-
-    setCurrentNode(next)
   }
+
+  const goBack = () => {
+    if (!history.length) return
+
+    const prev = [...history]
+    const last = prev.pop()
+
+    setHistory(prev)
+    setCurrentNode(last)
+  }
+
+  const node = story?.[currentNode]
 
   return (
     <>
       <div className="game-card">
         <h3>Historia final</h3>
         <p>Descubre el desenlace</p>
+
         <button
           onClick={() => {
             loadStory()
             setOpen(true)
           }}
         >
-          Empezar
+          {loading ? "Cargando..." : "Empezar"}
         </button>
       </div>
 
-      {open && story && (
+      {open && story && node && (
         <div className="modal-overlay">
           <div className="modal story-modal">
-            
             <div className="modal-header">
-              <h2>Historia</h2>
+              <h2>{story.title || "Historia"}</h2>
+
               <button className="close" onClick={() => setOpen(false)}>
                 ✕
               </button>
@@ -69,11 +84,11 @@ export default function StoryCard({ card, isUnlocked, unlock }) {
 
             <div className="story-content">
               <p className="story-text">
-                {story[currentNode].text}
+                {node.text}
               </p>
 
               <div className="story-choices">
-                {story[currentNode].choices?.map((choice, i) => (
+                {node.choices?.map((choice, i) => (
                   <button
                     key={i}
                     onClick={() => handleChoice(choice.next)}
@@ -83,7 +98,18 @@ export default function StoryCard({ card, isUnlocked, unlock }) {
                 ))}
               </div>
 
-              {story[currentNode].end && (
+              <div className="story-actions">
+                {history.length > 0 && !node.end && (
+                  <button
+                    className="story-back"
+                    onClick={goBack}
+                  >
+                    ← Volver
+                  </button>
+                )}
+              </div>
+
+              {node.end && (
                 <div className="story-end">
                   🎉 Fin de la historia
                 </div>
