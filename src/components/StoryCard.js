@@ -114,7 +114,7 @@ export default function StoryCard({ card, isUnlocked, unlock }) {
   return (
     <>
       <div className="game-card story-card">
-        <h3>Historia final</h3>
+        <h3>Història final</h3>
         <p>Descubre el desenlace</p>
 
         <button
@@ -131,7 +131,7 @@ export default function StoryCard({ card, isUnlocked, unlock }) {
         <div className="modal-overlay">
           <div className="modal story-modal">
             <div className="modal-header">
-              <h2>Historia</h2>
+              <h2>Història</h2>
 
               <button className="close" onClick={() => setOpen(false)}>
                 ✕
@@ -203,7 +203,7 @@ export default function StoryCard({ card, isUnlocked, unlock }) {
               ) : (
                 <Image
                   src={gallery[photoIndex]}
-                  alt="Foto historia"
+                  alt="Foto història"
                   width={420}
                   height={420}
                   className={`story-photo ${photoFade ? "fade-out" : "fade-in"}`}
